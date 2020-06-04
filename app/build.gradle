@@ -1,0 +1,73 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+
+    // note: use gradle.properties in project root level to set your api credentials
+    def apiKey = project.properties['indoorAtlasApiKey'] ?: "add9f503-d47d-47e4-9308-c0b2ff5210ae"
+    def apiSecret = project.properties['indoorAtlasApiSecret'] ?: "A+5xrJ7/XifA+94rFYcBOeSewhIhdvE0fe8FNuNcwWdE8QcEWVMEPc4uoQtUAvn+ek6ZnQR7SYlmv5ONMyQjxceA2OOJWl7B3YFVb0qn2OL/0hisbdo1Mec2x5fQDw=="
+    def pubNubPublishKey = project.properties['pubNubPublishKey'] ?: "not-set"
+    def pubNubSubscribeKey = project.properties['pubNubSubscribeKey'] ?: "not-set"
+
+    defaultConfig {
+        applicationId "com.elegy.alicein4"
+        ndk {
+            abiFilters 'armeabi-v7a'
+        }
+        minSdkVersion 24
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        // avoid getting errors from malformed string resources if secret contains '%' chars
+        resValue "string", "indooratlas_api_key", apiKey
+        resValue "string", "indooratlas_api_secret", apiSecret.replaceAll("%", "\\\\u0025")
+        resValue "string", "pubnub_publish_key", pubNubPublishKey
+        resValue "string", "pubnub_subscribe_key", pubNubSubscribeKey
+    }
+    // Sceneform libraries use language constructs from Java 8.
+    // Add these compile options if targeting minSdkVersion < 26.
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildTypes {
+        debug {
+            debuggable true
+        }
+        release {
+            signingConfig signingConfigs.debug
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+
+    packagingOptions {
+        doNotStrip '*/armeabi-v7a/*.so'
+    }
+}
+
+dependencies {
+    // Provides ArFragment, and other Sceneform UX resources:
+    implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.13.0'
+    implementation 'com.indooratlas.android:indooratlas-android-sdk:3.1.1'
+    implementation 'com.google.android.gms:play-services-maps:8.1.0'
+    implementation 'com.google.maps.android:android-maps-utils:0.3.+'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.2.0'
+    implementation 'com.pubnub:pubnub-android:3.7.5'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.android.support:design:28+'
+    implementation files('lib/unity-classes.jar')
+    implementation fileTree(dir: 'lib', include: ['*.jar'])
+}
+
+apply plugin: 'com.google.ar.sceneform.plugin'
+
+sceneform.asset('sampledata/models/scene.gltf',
+        'default',
+        'sampledata/models/scene.sfa',
+        'src/main/res/raw/scene')
