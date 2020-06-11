@@ -8,3 +8,7 @@ This is indoor navigation application is developed based on Android system, Goog
 
 The Navigationi module is based on the Indoor Atlas SDK and the Google Maps SDK.
 Due to the limitation of testing area, this application right now can only be used at the Beijing-Dublin International College at the Beijing University of Technology.
+
+## Augmented Reality Module
+
+The AR module is based on the Vuforia and Unity combined with the Android archetecture.
